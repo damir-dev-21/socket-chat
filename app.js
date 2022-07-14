@@ -5,7 +5,7 @@ const server = http.createServer(app)
 
 const {Server} = require('socket.io')
 const io = new Server(server)
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 3000
 
 app.get("/",(req,res)=>{
     res.write(`<h1>Socket IO started on Port: ${PORT}</h1>`)
@@ -15,7 +15,7 @@ app.get("/",(req,res)=>{
 io.on('connection',(socket)=>{
     console.log('User connected');
     socket.on('message',(ms)=>{
-        io.emit('message',"Hello World")
+        io.emit('message',ms)
     })
 })
 
