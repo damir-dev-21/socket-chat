@@ -1,27 +1,24 @@
 const express = require('express')
 const app = express()
+const http = require('http')
+const server = http.createServer(app)
 
-app.set("view engine", "ejs")
+const {Server} = require('socket.io')
+const io = new Server(server)
+const PORT = process.env.PORT || 5000
 
-app.use(express.static("public"))
-
-app.get('/', (req,res)=>{
-    res.render("index")
+app.get("/",(req,res)=>{
+    res.write(`<h1>Socket IO started on Port: ${PORT}</h1>`)
+    res.end()
 })
 
-server = app.listen("5151",()=>console.log("Server is running..."))
-
-const io = require('socket.io')(server)
-
-io.on("connection",socket=>{
-    console.log("New user connected");
-
-    socket.username = "Anonymous"
-
-    socket.on('change_username',(data)=>{
-        socket.username = data.username
+io.on('connection',(socket)=>{
+    console.log('User connected');
+    socket.on('message',(ms)=>{
+        io.emit('message',ms)
     })
-    socket.on('new_message', (data) => {
-        io.sockets.emit('add_mess', {message : data.message, username : socket.username, className:data.className});
-    })
+})
+
+server.listen(PORT, () => {
+    console.log("Listening on *:5000");
 })
